@@ -126,6 +126,7 @@ cat >/etc/nginx/snippets/self-signed.conf <<EOL
 ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
 ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
 EOL
+fi
 
 cat >/etc/nginx/snippets/ssl-params.conf <<EOL
 # from https://cipherli.st/ and https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
@@ -144,10 +145,6 @@ add_header X-Frame-Options DENY;
 add_header X-Content-Type-Options nosniff;
 ssl_dhparam /etc/ssl/certs/dhparam.pem;
 EOL
-    echo "self-signed cert created"
-else
-    echo "self-signed cert already created"
-fi
 
 # # install dist/data
 # cd $DEPLOY_DIR
