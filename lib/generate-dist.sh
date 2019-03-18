@@ -16,6 +16,7 @@ cd $dir/src/app
 if [ -d "$dir/dist" ]; then rm -Rf $dir/dist; fi
 cd $dir/src/app
 dotnet publish -c release -r ubuntu.16.04-x64 -o $dir/dist
+chmod +x $dir/dist/app
 cd $dir
 
 # clean up

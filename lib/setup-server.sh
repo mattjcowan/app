@@ -26,7 +26,7 @@ if [ ! -d $DEPLOY_DIR/dist ]; then
     sudo mkdir -p $DEPLOY_DIR/data
 fi
 if [ -d $cdir/../dist ]; then 
-    sudo cp -r $cdir/../dist $DEPLOY_DIR/dist
+    sudo cp -r $cdir/../dist/* $DEPLOY_DIR/dist/
 fi
 
 PUBLIC_IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
@@ -162,7 +162,7 @@ cat >/etc/systemd/system/app.service <<EOL
 Description=app service
 [Service]
 WorkingDirectory=$DEPLOY_DIR/dist
-ExecStart=app
+ExecStart=$DEPLOY_DIR/dist/app
 Restart=always
 RestartSec=10
 SyslogIdentifier=dotnet-app
@@ -230,8 +230,10 @@ server {
         # The following are needed for a perfect security score
         # get a grade A in security at https://securityheaders.io
         add_header X-Frame-Options SAMEORIGIN always;
-        add_header X-Content-Type-Options nosniff always;
-        #add_header X-Content-Type-Options "" always;
+        # The following would be best, but the 'hello world'
+        # does not return a content-type
+        #add_header X-Content-Type-Options nosniff always;
+        add_header X-Content-Type-Options "" always;
         add_header X-XSS-Protection "1; mode=block" always;
         add_header Strict-Transport-Security \$hsts_header;
         # add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";
