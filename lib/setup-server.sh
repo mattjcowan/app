@@ -241,7 +241,6 @@ server {
     }
 }
 EOL
-fi
 
 sudo chown -R www-data:www-data $DEPLOY_DIR/
 sudo chmod -R 755 $DEPLOY_DIR/
