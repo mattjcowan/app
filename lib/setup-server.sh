@@ -12,6 +12,8 @@ if [ "$CDN_HOSTS" = "" ]; then CDN_HOSTS="https://ssl.google-analytics.com https
 
 #####################################
 # Don't change below this line
+sudo mkdir -p /tmp
+cd /tmp
 
 sudo mkdir -p $DEPLOY_DIR
 if [ ! -d $DEPLOY_DIR/dist ]; then 
@@ -25,8 +27,8 @@ fi
 PUBLIC_IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 
 # install common libraries
-sudo apt-get update
-sudo apt-get -y upgrade
+sudo apt-get update -y
+sudo apt-get upgrade -y
 sudo apt-get install nano -y
 sudo apt-get install git -y
 sudo apt-get install sqlite3 -y
@@ -70,6 +72,14 @@ sudo apt-get update && sudo apt-get -y upgrade
 sudo apt-get install -y gcc g++ make
 sudo apt-get install -y yarn
 yes | sudo apt-get autoremove
+
+# install phantomjs (https://www.vultr.com/docs/how-to-install-phantomjs-on-ubuntu-16-04)
+cd /tmp
+sudo apt-get install build-essential chrpath libssl-dev libxft-dev libfreetype6-dev libfreetype6 libfontconfig1-dev libfontconfig1 -y
+sudo wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+sudo tar xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2 -C /usr/local/share/
+sudo ln -s /usr/local/share/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/
+sudo chmod +x /usr/local/bin/phantomjs
 
 # install dotnet pre-reqs and sdk (if applicable)
 sudo apt-get install -y liblttng-ust0 libcurl3 libssl1.0.0 libkrb5-3 zlib1g
