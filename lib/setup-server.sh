@@ -246,6 +246,10 @@ server {
 EOL
 fi
 
+sudo chown -R www-data:www-data $DEPLOY_DIR/
+sudo chmod -R 755 $DEPLOY_DIR/
+echo "app permissions set"
+
 sudo systemctl enable app.service
 sudo systemctl stop app.service
 sudo systemctl start app.service
