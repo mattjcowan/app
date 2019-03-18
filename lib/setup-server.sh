@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-# INSTRUCTIONS to run this script
-# sudo apt-get install git -y
-# mkdir -p /tmp/repos
-# cd /tmp/repos
-# git clone -b master https://github.com/mattjcowan/app.git
-# ./app/lib/setup-server.sh
-
 dir=$(pwd)
 cdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
