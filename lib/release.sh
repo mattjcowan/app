@@ -29,6 +29,9 @@ git commit -m "Release of version $VERSION"
 if [[ $(dotnet tool list -g) != *"dotnet-version-cli"* ]]; then dotnet tool install -g dotnet-version-cli; fi
 dotnet version -f "$dir/src/app/app.csproj" patch
 VERSION=$(grep '<Version>' < "$dir/src/app/app.csproj" | sed 's/.*<Version>\(.*\)<\/Version>/\1/')
+
+git add .
+git commit -m "Release of version $VERSION"
 git push
 
 if [ "$CURRENT_VERSION" = "$VERSION" ]; then exit 1; fi
