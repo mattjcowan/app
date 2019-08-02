@@ -33,6 +33,8 @@ git push
 
 if [ "$CURRENT_VERSION" = "$VERSION" ]; then exit 1; fi
 
+exit 1
+
 # build and create release archives
 for rid in "${winOS[@]}"
 do
