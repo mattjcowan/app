@@ -34,30 +34,42 @@ git push --tags
 API_JSON=$(printf '{"tag_name": "v%s","target_commitish": "master","name": "v%s","body": "Release of version %s","draft": false,"prerelease": false}' $VERSION $VERSION $VERSION)
 curl --data "$API_JSON" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases?access_token=$GITHUB_ACCESSTOKEN"
 
+# get release id
+RELEASE_JSON=$(curl  -s -H 'Accept: application/json' https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/v$VERSION)
+eval $(echo "$RELEASE_JSON" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
+[ "$id" ] || { echo "Error: Failed to get release id for tag: latest"; echo "$RELEASE_JSON" | awk 'length($0)<100' >&2; exit 1; }
+RELEASE_ID=$id
+
 # build and create release archives
+GITHUB_OAUTH_BASIC=$(printf %s:x-oauth-basic $GITHUB_ACCESSTOKEN)
+
 declare -a winOS=("win-x64")
 declare -a unixOS=("osx-x64" "linux-x64" "ubuntu-x64")
 
 for rid in "${winOS[@]}"
 do
-    cd $libdir
-    ./build.sh $rid
-    cd $dir/dist
-	zip -r $dir/releases/app-$rid.zip .
-    rm -Rf $dir/dist    
+    cd $libdir && ./build.sh $rid
+    cd $dir/dist && zip -r $dir/releases/app-$rid.zip .
 
-    curl -X POST https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/v${VERSION}/assets?access_token=${GITHUB_ACCESSTOKEN}&name=app-${rid}.zip\
-        --header 'Content-Type: text/javascript ' --upload-file ${dir}/releases/app-${rid}.zip
+    curl -X POST \
+        --user "${GITHUB_OAUTH_BASIC}" \
+        --upload-file "$dir/releases/app-$rid.zip" \
+        -H "Authorization: token ${GITHUB_ACCESSTOKEN}" \
+        -H "Content-Type: application/octet-stream" \
+        "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/$RELEASE_ID/assets?name=app-$rid.zip"
 done
 
 for rid in "${unixOS[@]}"
 do
-    cd $libdir
-    ./build.sh $rid
-    cd $dir/dist
-	tar -cvzf $dir/releases/app-$rid.tar.gz .
-    rm -Rf $dir/dist
+    cd $libdir && ./build.sh $rid
+    cd $dir/dist && tar -cvzf $dir/releases/app-$rid.tar.gz .
 
-    curl -X POST https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/v${VERSION}/assets?access_token=${GITHUB_ACCESSTOKEN}&name=app-${rid}.tar.gz\
-        --header 'Content-Type: text/javascript ' --upload-file ${dir}/releases/app-${rid}.tar.gz
+    curl -X POST \
+        --user "${GITHUB_OAUTH_BASIC}" \
+        --upload-file "$dir/releases/app-$rid.tar.gz" \
+        -H "Authorization: token ${GITHUB_ACCESSTOKEN}" \
+        -H "Content-Type: application/octet-stream" \
+        "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/$RELEASE_ID/assets?name=app-$rid.tar.gz"
 done
+
+rm -Rf $dir/dist    
