@@ -39,7 +39,7 @@ curl --data "$API_JSON" "https://api.github.com/repos/$GITHUB_REPOSITORY/release
 # get release id
 RELEASE_JSON=$(curl  -s -H 'Accept: application/json' https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/v$VERSION)
 eval $(echo "$RELEASE_JSON" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
-[ "$id" ] || { echo "Error: Failed to get release id for tag: latest"; echo "$RELEASE_JSON" | awk 'length($0)<100' >&2; exit 1; }
+[ "$id" ] || { echo "Error: Failed to get release id for tag: v$VERSION"; echo "$RELEASE_JSON" | awk 'length($0)<100' >&2; exit 1; }
 RELEASE_ID=$id
 
 # build and create release archives
