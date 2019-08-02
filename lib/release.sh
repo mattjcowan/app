@@ -10,9 +10,6 @@ source env.sh
 rm -Rf $dir/releases
 mkdir -p $dir/releases
 
-declare -a winOS=("win-x64")
-declare -a unixOS=("osx-x64" "linux-x64" "ubuntu-x64")
-
 # bump version
 CURRENT_VERSION=$(grep '<Version>' < "$dir/src/app/app.csproj" | sed 's/.*<Version>\(.*\)<\/Version>/\1/')
 if [ "$CURRENT_VERSION" = "" ]
@@ -37,9 +34,10 @@ git push --tags
 API_JSON=$(printf '{"tag_name": "v%s","target_commitish": "master","name": "v%s","body": "Release of version %s","draft": false,"prerelease": false}' $VERSION $VERSION $VERSION)
 curl --data "$API_JSON" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases?access_token=$GITHUB_ACCESSTOKEN"
 
-exit 1
-
 # build and create release archives
+declare -a winOS=("win-x64")
+declare -a unixOS=("osx-x64" "linux-x64" "ubuntu-x64")
+
 for rid in "${winOS[@]}"
 do
     cd $libdir
@@ -47,6 +45,9 @@ do
     cd $dir/dist
 	zip -r $dir/releases/app-$rid.zip .
     rm -Rf $dir/dist    
+
+    curl -X POST https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/v${VERSION}/assets?access_token=${GITHUB_ACCESSTOKEN}&name=app-${rid}.zip\
+        --header 'Content-Type: text/javascript ' --upload-file ${dir}/releases/app-${rid}.zip
 done
 
 for rid in "${unixOS[@]}"
@@ -56,4 +57,7 @@ do
     cd $dir/dist
 	tar -cvzf $dir/releases/app-$rid.tar.gz .
     rm -Rf $dir/dist
+
+    curl -X POST https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/v${VERSION}/assets?access_token=${GITHUB_ACCESSTOKEN}&name=app-${rid}.tar.gz\
+        --header 'Content-Type: text/javascript ' --upload-file ${dir}/releases/app-${rid}.tar.gz
 done

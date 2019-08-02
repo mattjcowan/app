@@ -13,6 +13,11 @@ fi
 
 if [ "$GITHUB_ACCESSTOKEN" = "" ];
 then 
+    if [ -f '~/.ghtoken' ]; then GITHUB_ACCESSTOKEN=`cat ~/.ghtoken`; fi
+fi
+
+if [ "$GITHUB_ACCESSTOKEN" = "" ];
+then 
     echo -n "Enter your GitHub access token and press [ENTER]: "
     read GITHUB_ACCESSTOKEN
     if [ "$GITHUB_ACCESSTOKEN" = "" ]; then exit 1; fi
