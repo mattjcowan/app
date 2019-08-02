@@ -78,9 +78,20 @@ chmod +x ./lib/release.sh
 
 ### Deploying updates
 
+#### Deploy directly to the server
+
 To re-deploy or deploy a new version of the app to the server:
 
 ```bash
-chmod +x ./lib/deploy.sh
-./lib/deploy.sh
+chmod +x ./lib/deploy-direct.sh
+./lib/deploy-direct.sh
+```
+
+#### Deploy release
+
+To re-deploy or deploy a release (it will prompt for the release to deploy):
+
+```bash
+chmod +x ./lib/deploy-release.sh
+./lib/deploy-release.sh
 ```

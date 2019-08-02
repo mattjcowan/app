@@ -1,9 +1,11 @@
 .vscode/
+.idea/
 [Bb]in/
 [Oo]bj/
 src/data/
 src/
 releases/
 tests/
+node_modules/
 
 .env

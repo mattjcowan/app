@@ -25,8 +25,9 @@ if [ ! -d $DEPLOY_DIR/dist ]; then
 fi
 cd $DEPLOY_DIR/dist
 wget -q $DEPLOY_ARCHIVE_URL
-tar -zxvf $DEPLOY_ARCHIVE_FILE
+tar -zxf $DEPLOY_ARCHIVE_FILE
 chmod +x app
+rm $DEPLOY_ARCHIVE_FILE
 
 PUBLIC_IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 

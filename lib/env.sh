@@ -24,22 +24,6 @@ then
     echo "GITHUB_ACCESSTOKEN=$GITHUB_ACCESSTOKEN" >> "$envf"
 fi
 
-if [ "$REMOTE_SERVER" = "" ];
-then 
-    echo -n "Enter your remote server host name or IP and press [ENTER]: "
-    read REMOTE_SERVER
-    if [ "$REMOTE_SERVER" = "" ]; then exit 1; fi
-    echo "REMOTE_SERVER=$REMOTE_SERVER" >> "$envf"
-fi
-
-if [ "$REMOTE_USER" = "" ];
-then 
-    echo -n "Enter your remote server sudo user (default: root) and press [ENTER]: "
-    read REMOTE_USER
-    if [ "$REMOTE_USER" = "" ]; then REMOTE_USER=root; fi
-    echo "REMOTE_USER=$REMOTE_USER" >> "$envf"
-fi
-
 if [ "$RID" = "" ];
 then 
     echo -n "Enter your remote server runtime id (default: ubuntu-x64) and press [ENTER]: "
