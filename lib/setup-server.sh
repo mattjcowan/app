@@ -10,6 +10,9 @@ if [ "$INSTALL_DOTNET_SDK" = "" ]; then INSTALL_DOTNET_SDK=0; fi
 if [ "$DOTNET_VERSION" = "" ]; then DOTNET_VERSION=dotnet-sdk-2.2; fi
 if [ "$CDN_HOSTS" = "" ]; then CDN_HOSTS="https://ssl.google-analytics.com https://fonts.googleapis.com https://themes.googleusercontent.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com https://code.jquery.com https://cdnjs.cloudflare.com"; fi
 
+if [ "$DEPLOY_ARCHIVE_URL" = "" ]; then DEPLOY_ARCHIVE_URL="https://github.com/mattjcowan/app/releases/latest/download/app-ubuntu-x64.tar.gz"; fi
+if [ "$DEPLOY_ARCHIVE_FILE" = "" ]; then DEPLOY_ARCHIVE_FILE=app-ubuntu-x64.tar.gz; fi
+
 #####################################
 # Don't change below this line
 sudo mkdir -p /tmp
@@ -20,9 +23,10 @@ if [ ! -d $DEPLOY_DIR/dist ]; then
     sudo mkdir -p $DEPLOY_DIR/dist
     sudo mkdir -p $DEPLOY_DIR/data
 fi
-if [ -d $cdir/../dist ]; then 
-    sudo cp -r $cdir/../dist/* $DEPLOY_DIR/dist/
-fi
+cd $DEPLOY_DIR/dist
+wget -q $DEPLOY_ARCHIVE_URL
+tar -zxvf $DEPLOY_ARCHIVE_FILE
+chmod +x app
 
 PUBLIC_IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 
@@ -148,15 +152,6 @@ add_header X-Frame-Options DENY;
 add_header X-Content-Type-Options nosniff;
 ssl_dhparam /etc/ssl/certs/dhparam.pem;
 EOL
-
-# # install dist/data
-# cd $DEPLOY_DIR
-# git clone -b master https://github.com/mattjcowan/app.git .
-# rm -Rf ./.git
-# rm .gitignore
-# rm package.json
-# rm README.md
-# mkdir -p data
 
 # setup system.d service
 if [ ! -f "/etc/systemd/system/app.service" ]; then

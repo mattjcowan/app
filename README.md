@@ -2,44 +2,85 @@
 
 Private repository for bootstrapping demos
 
-## Setup
+## Run bits locally
 
-ssh to a vanilla `Ubuntu (16|18).04` vm:
+### Windows
+
+Create an empty directory and `cd` into it:
+
+```cmd
+rem download and extract
+@"powershell" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://github.com/mattjcowan/app/releases/latest/download/app-win-x64.zip -OutFile app-win-x64.zip"
+@"powershell" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Unblock-File -Path app-win-x64.zip"
+@"powershell" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "$global:ProgressPreference = 'SilentlyContinue'; Expand-Archive -Force -Path app-win-x64.zip -DestinationPath .\\"
+
+rem run the app
+.\app.exe
+```
+
+### MacOS
+
+Create an empty directory and `cd` into it:
+
+```shell
+# download and extract
+wget -q https://github.com/mattjcowan/app/releases/latest/download/app-osx-x64.tar.gz
+tar -zxvf app-osx-x64.tar.gz
+
+# run the app
+$ chmod +x app && ./app
+```
+
+### Linux
+
+Create an empty directory and `cd` into it:
+
+```shell
+# download and extract
+wget -q https://github.com/mattjcowan/app/releases/latest/download/app-linux-x64.tar.gz
+tar -zxvf app-linux-x64.tar.gz
+
+# run the app
+$ chmod +x app && ./app
+```
+
+## Setup (Remote Server)
+
+`ssh` to a vanilla `Ubuntu (16|18).04` vm:
 
 ```bash
-sudo apt-get install git -y
-mkdir -p /tmp/repos
-cd /tmp/repos
-git clone -b master https://github.com/mattjcowan/app.git
-./app/lib/setup-server.sh
+wget -q https://raw.githubusercontent.com/mattjcowan/app/master/lib/setup-server.sh
+chmod +x ./setup-server.sh
+./setup-server.sh
 ```
 
 Your app is now available at https://{server_ip}/
 
-## Deploying
+## Development
 
-To re-deploy or deploy a new app, you can do the following:
+### Bootstrap a new app
+
+You've cloned this repo and want to use it as the basis for your own app:
 
 ```bash
-# `cd` to the root of your repo
-dir=$(pwd)
+chmod +x ./lib/init-local.sh
+./lib/init-local.sh
+```
 
-# set some variables
-local_src=$dir/src/app              # assumes app is at this location
-local_path=$dir/dist                # local deployment location
-remote_server=44.44.44.44           # remote server ip
-remote_user=root                    # remote user
-remote_service=app                  # name of system.d service
-remote_path=/var/www/app/dist       # deployment path
+### Releases
 
-# publish app locally
-cd $local_src
-dotnet publish -c release -r ubuntu.16.04-x64 -o $local_path
-chmod +x $local_path/app
+Create a release by pushing changes, tagging the repo and uploading the latest archives to GitHub:
 
-# rsync app to remote server
-ssh $remote_user@$remote_server "sudo chown -R $remote_user:$remote_user $remote_path"
-rsync -avz --delete --no-perms -e 'ssh' $local_path/ $remote_user@$remote_server:$remote_path
-ssh $remote_user@$remote_server "sudo chown -R www-data:www-data $remote_path/ && sudo chmod -R 755 $remote_path/"
-ssh $remote_user@$remote_server "sudo service $remote_service restart"
+```bash
+chmod +x ./lib/release.sh
+./lib/release.sh
+```
+
+### Deploying updates
+
+To re-deploy or deploy a new version of the app to the server:
+
+```bash
+chmod +x ./lib/deploy.sh
+./lib/deploy.sh
 ```
