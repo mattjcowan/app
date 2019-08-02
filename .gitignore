@@ -4,5 +4,6 @@
 src/data/
 src/
 releases/
+tests/
 
 .env
