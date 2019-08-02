@@ -21,12 +21,18 @@ fi
 if [[ $(dotnet tool list -g) != *"dotnet-version-cli"* ]]; then dotnet tool install -g dotnet-version-cli; fi
 dotnet version -f "$dir/src/app/app.csproj" patch
 VERSION=$(grep '<Version>' < "$dir/src/app/app.csproj" | sed 's/.*<Version>\(.*\)<\/Version>/\1/')
+VERSION=$(echo $VERSION | sed 's/[^0-9.]*//g')
+# echo VERSION=$(grep '<Version>' < "$dir/src/app/app.csproj" | sed 's/.*<Version>\(.*\)<\/Version>/\1/') > $libdir/.version
+# source $libdir/.version
 
 if [ "$CURRENT_VERSION" = "$VERSION" ]; then exit 1; fi
 
 git add .
-git commit -m "Release of version $VERSION"
+git commit -m 'Release of version $VERSION'
 git push
+
+echo Creating tag v$VERSION
+
 git tag -a v$VERSION -m "Release of version v$VERSION"
 git push --tags
 
@@ -34,6 +40,7 @@ echo Creating release v$VERSION
 
 # create release on GitHub
 API_JSON=$(printf '{"tag_name": "v%s","target_commitish": "master","name": "v%s","body": "Release of version %s","draft": false,"prerelease": false}' $VERSION $VERSION $VERSION)
+echo "$API_JSON"
 curl --data "$API_JSON" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases?access_token=$GITHUB_ACCESSTOKEN"
 
 # get release id
