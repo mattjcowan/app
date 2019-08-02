@@ -4,7 +4,7 @@ Private repository for bootstrapping demos
 
 ## Setup
 
-ssh to a vanilla `Ubuntu 16.04` vm:
+ssh to a vanilla `Ubuntu (16|18).04` vm:
 
 ```bash
 sudo apt-get install git -y
