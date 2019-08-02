@@ -10,9 +10,9 @@ Create an empty directory and `cd` into it:
 
 ```cmd
 rem download and extract
-@"powershell" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://github.com/mattjcowan/app/releases/latest/download/app-win-x64.zip -OutFile app-win-x64.zip"
-@"powershell" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Unblock-File -Path app-win-x64.zip"
-@"powershell" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "$global:ProgressPreference = 'SilentlyContinue'; Expand-Archive -Force -Path app-win-x64.zip -DestinationPath .\\"
+powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://github.com/mattjcowan/app/releases/latest/download/app-win-x64.zip -OutFile app-win-x64.zip"
+powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Unblock-File -Path app-win-x64.zip"
+powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "$global:ProgressPreference = 'SilentlyContinue'; Expand-Archive -Force -Path app-win-x64.zip -DestinationPath .\\"
 
 rem run the app
 .\app.exe
