@@ -30,11 +30,17 @@ if [[ $(dotnet tool list -g) != *"dotnet-version-cli"* ]]; then dotnet tool inst
 dotnet version -f "$dir/src/app/app.csproj" patch
 VERSION=$(grep '<Version>' < "$dir/src/app/app.csproj" | sed 's/.*<Version>\(.*\)<\/Version>/\1/')
 
+if [ "$CURRENT_VERSION" = "$VERSION" ]; then exit 1; fi
+
 git add .
 git commit -m "Release of version $VERSION"
 git push
+git tag -a v$VERSION -m "Release of version v$VERSION"
+git push --tags
 
-if [ "$CURRENT_VERSION" = "$VERSION" ]; then exit 1; fi
+# create release on GitHub
+API_JSON=$(printf '{"tag_name": "v%s","target_commitish": "master","name": "v%s","body": "Release of version %s","draft": false,"prerelease": false}' $VERSION $VERSION $VERSION)
+curl --data "$API_JSON" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases?access_token=$GITHUB_ACCESSTOKEN"
 
 exit 1
 
@@ -56,7 +62,3 @@ do
 	tar -cvzf $dir/releases/app-$rid.tar.gz .
     rm -Rf $dir/dist
 done
-
-# create release on GitHub
-API_JSON=$(printf '{"tag_name": "v%s","target_commitish": "master","name": "v%s","body": "Release of version %s","draft": false,"prerelease": false}' $VERSION $VERSION $VERSION)
-curl --data "$API_JSON" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases?access_token=$GITHUB_ACCESSTOKEN"
